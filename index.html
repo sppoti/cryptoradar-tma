@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0d14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>CryptoRadar PRO — WebApp Terminal</title>
+  
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- TradingView Widget Script -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Фоновые неоновые световые сферы для эффекта глубокого стекла -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <div class="app-container">
+    <!-- ВЕРХНЯЯ ШАПКА / ТЕРМИНАЛ БАР -->
+    <header class="glass-header">
+      <div class="header-left">
+        <div class="logo-wrapper">
+          <div class="radar-pulse">
+            <span class="pulse-ring"></span>
+            <span class="pulse-center"></span>
+          </div>
+          <div class="logo-text">
+            <span class="brand-title">CryptoRadar <span class="badge-pro">PRO</span></span>
+            <span class="live-status"><span class="live-dot"></span> LIVE BINANCE FEED</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="header-right">
+        <div id="user-pill" class="user-pill glass-card-sm" title="Ваш профиль">
+          <span class="user-avatar" id="user-avatar">👤</span>
+          <span class="user-name" id="user-name">Загрузка...</span>
+          <span class="sub-status-badge badge-free" id="vip-badge">FREE</span>
+        </div>
+        <button id="btn-open-vip-header" class="btn-glow-vip" title="Активировать VIP">
+          <span class="icon">💎</span> <span class="text">VIP Доступ</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- БЕГУЩИЙ ТИКЕР РЫНКА (КАРУСЕЛЬ) -->
+    <section class="ticker-bar-section">
+      <div class="ticker-scroll" id="ticker-scroll">
+        <!-- Генерируется динамически через app.js -->
+        <div class="ticker-item skeleton">Загрузка котировок...</div>
+      </div>
+    </section>
+
+    <!-- СВОДНЫЕ РЫНОЧНЫЕ ИНДИКАТОРЫ (KPI CARDS) -->
+    <section class="market-metrics-grid">
+      <div class="metric-card glass-card">
+        <div class="metric-header">
+          <span class="metric-title">Индекс страха / жадности</span>
+          <span class="metric-icon">🧭</span>
+        </div>
+        <div class="metric-value-row">
+          <span class="metric-num" id="fg-index">74</span>
+          <span class="metric-tag tag-greed" id="fg-label">Жадность</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill greed-fill" id="fg-bar" style="width: 74%;"></div>
+        </div>
+      </div>
+
+      <div class="metric-card glass-card">
+        <div class="metric-header">
+          <span class="metric-title">Доминация BTC</span>
+          <span class="metric-icon">👑</span>
+        </div>
+        <div class="metric-value-row">
+          <span class="metric-num" id="btc-dom">57.2%</span>
+          <span class="metric-change positive">+0.4%</span>
+        </div>
+        <span class="metric-sub">Капитализация альткоинов в сжатии</span>
+      </div>
+
+      <div class="metric-card glass-card">
+        <div class="metric-header">
+          <span class="metric-title">Объем торгов (24ч)</span>
+          <span class="metric-icon">💧</span>
+        </div>
+        <div class="metric-value-row">
+          <span class="metric-num" id="market-vol">$114.8B</span>
+          <span class="metric-tag tag-neutral">Высокий</span>
+        </div>
+        <span class="metric-sub">Торговая активность на споте и деривативах</span>
+      </div>
+
+      <div class="metric-card glass-card">
+        <div class="metric-header">
+          <span class="metric-title">Активные AI Сигналы</span>
+          <span class="metric-icon">🎯</span>
+        </div>
+        <div class="metric-value-row">
+          <span class="metric-num" id="active-signals-count">8</span>
+          <span class="metric-tag tag-accent">В радаре</span>
+        </div>
+        <span class="metric-sub">5 VIP сигналов доступны подписчикам</span>
+      </div>
+    </section>
+
+    <!-- СЕКЦИЯ TRADINGVIEW ГРАФИКА -->
+    <section class="chart-section glass-card">
+      <div class="chart-header">
+        <div class="chart-asset-info">
+          <span class="chart-symbol" id="chart-symbol-title">BTC/USDT</span>
+          <span class="chart-price" id="chart-price-display">$91,850.00</span>
+          <span class="chart-change positive" id="chart-change-display">+3.45%</span>
+        </div>
+        
+        <div class="chart-switchers">
+          <span class="switcher-label">Быстрый переход:</span>
+          <div class="symbol-pills">
+            <button class="coin-pill active" data-symbol="BTCUSDT">BTC</button>
+            <button class="coin-pill" data-symbol="ETHUSDT">ETH</button>
+            <button class="coin-pill" data-symbol="SOLUSDT">SOL</button>
+            <button class="coin-pill" data-symbol="TONUSDT">TON</button>
+            <button class="coin-pill" data-symbol="XRPUSDT">XRP</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Контейнер для виджета TradingView -->
+      <div class="chart-container-box">
+        <div id="tv_chart_container" class="tv-chart-frame"></div>
+      </div>
+    </section>
+
+    <!-- СЕКЦИЯ AI СИГНАЛОВ И ТОРГОВЫХ СЕТАПОВ -->
+    <section class="signals-section">
+      <div class="section-title-row">
+        <div>
+          <h2 class="section-title">🎯 AI Сигналы и Торговые Сетапы</h2>
+          <p class="section-subtitle">Машинный скоринг объемов, стакана и многотаймфреймовых RSI дивергенций</p>
+        </div>
+        <div class="signals-filter-tabs">
+          <button class="filter-tab active" data-filter="all">Все (5)</button>
+          <button class="filter-tab" data-filter="long">LONG</button>
+          <button class="filter-tab" data-filter="short">SHORT</button>
+          <button class="filter-tab highlight-vip" data-filter="vip">💎 VIP</button>
+        </div>
+      </div>
+
+      <div class="signals-cards-grid" id="signals-grid">
+        <!-- Генерируется динамически через app.js -->
+        <div class="signal-card skeleton">Загрузка торговых сигналов...</div>
+      </div>
+    </section>
+
+    <!-- СЕКЦИЯ РАДАРА RSI И АНОМАЛИЙ -->
+    <section class="scanner-section glass-card">
+      <div class="scanner-header-row">
+        <div>
+          <h2 class="section-title">🚨 Радар Перекупленности и Перепроданности</h2>
+          <p class="section-subtitle">Мониторинг индекса относительной силы (RSI 14) на таймфреймах 1H и 4H</p>
+        </div>
+        <div class="scanner-controls">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="scanner-search" placeholder="Поиск (BTC, SOL, TON...)" autocomplete="off">
+          </div>
+          <button id="btn-refresh-market" class="btn-refresh" title="Обновить котировки">
+            <span class="refresh-icon">🔄</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="radar-table" id="radar-table">
+          <thead>
+            <tr>
+              <th>Активы</th>
+              <th>Цена</th>
+              <th>24ч Динамика</th>
+              <th>RSI (1H)</th>
+              <th>RSI (4H)</th>
+              <th>Статус / Зона</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody id="radar-table-body">
+            <tr><td colspan="7" class="loading-cell">Загрузка данных сканера...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ПОДВАЛ WEBAPP -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p>© 2026 CryptoRadar PRO Platform. Все права защищены.</p>
+        <p class="disclaimer">Не является индивидуальной инвестиционной рекомендацией. Торговля криптовалютой сопряжена с высокими рисками.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО VIP PAYWALL (ПОДПИСКА) -->
+  <div id="vip-modal" class="modal-overlay hidden">
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal-content glass-card-modal">
+      <button class="modal-close-btn" id="btn-close-modal">✕</button>
+      
+      <div class="modal-header">
+        <div class="modal-badge">💎 CRYPTORADAR VIP INSIDER</div>
+        <h3 class="modal-title">Разблокируйте Премиум Аналитику</h3>
+        <p class="modal-desc">Получите максимальное преимущество на рынке с точностью сигналов до 92% и доступом в закрытый клуб.</p>
+      </div>
+
+      <!-- Преимущества VIP -->
+      <div class="vip-perks-grid">
+        <div class="perk-item">
+          <span class="perk-icon">⚡</span>
+          <div class="perk-text">
+            <strong>Мгновенные Flash-сигналы</strong>
+            <span>Точки входа, TP1/TP2 и Stop-Loss</span>
+          </div>
+        </div>
+        <div class="perk-item">
+          <span class="perk-icon">🤖</span>
+          <div class="perk-text">
+            <strong>AI Анализ Монет 24/7</strong>
+            <span>Глубокий разбор любого тикера по запросу</span>
+          </div>
+        </div>
+        <div class="perk-item">
+          <span class="perk-icon">🔒</span>
+          <div class="perk-text">
+            <strong>Закрытый VIP-Канал</strong>
+            <span>Авторская аналитика и торговые сетапы</span>
+          </div>
+        </div>
+        <div class="perk-item">
+          <span class="perk-icon">📚</span>
+          <div class="perk-text">
+            <strong>База Знаний и Чат</strong>
+            <span>Стратегии риск-менеджмента от про-трейдеров</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Выбор тарифа -->
+      <div class="tariffs-selection" id="tariffs-container">
+        <!-- Заполняется динамически из app.js -->
+        <div class="tariff-skeleton">Загрузка тарифов...</div>
+      </div>
+
+      <!-- Блок оплаты -->
+      <div class="payment-action-block">
+        <button id="btn-pay-stars" class="btn-primary-action btn-stars">
+          <span class="btn-icon">⭐</span>
+          <span class="btn-text" id="stars-btn-text">Оплатить через Telegram Stars</span>
+        </button>
+        <button id="btn-pay-rub" class="btn-secondary-action btn-rub">
+          <span class="btn-icon">💳</span>
+          <span class="btn-text" id="rub-btn-text">Оплатить переводом СБП / Картой</span>
+        </button>
+      </div>
+
+      <!-- Реквизиты прямого перевода (скрыты по умолчанию, открываются по клику) -->
+      <div id="manual-payment-box" class="manual-payment-box hidden">
+        <div class="manual-header">Реквизиты для оплаты по СБП:</div>
+        <div class="details-content" id="manual-details-text">Загрузка реквизитов...</div>
+        <div class="manual-actions">
+          <button id="btn-copy-card" class="btn-copy">📋 Скопировать карту</button>
+          <button id="btn-copy-phone" class="btn-copy">📱 СБП: +79055356182</button>
+          <button id="btn-open-bot-support" class="btn-support">💬 Отправить чек в бот</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST УВЕДОМЛЕНИЯ -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- App Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
