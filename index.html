@@ -3,43 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0a0d14">
+  <meta name="theme-color" content="#0b0f17">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>CryptoRadar PRO — WebApp Terminal</title>
+  <title>CryptoRadar PRO — Institutional TMA Terminal</title>
   
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Inter & JetBrains Mono (Astryx Institutional Typography) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- TradingView Widget Script -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   
-  <!-- Custom Stylesheet -->
+  <!-- Astryx Design System Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Фоновые неоновые световые сферы для эффекта глубокого стекла -->
+  <!-- Тонкие институциональные световые акценты Astryx -->
   <div class="ambient-glow glow-1"></div>
   <div class="ambient-glow glow-2"></div>
-  <div class="ambient-glow glow-3"></div>
 
   <div class="app-container">
-    <!-- ВЕРХНЯЯ ШАПКА / ТЕРМИНАЛ БАР -->
-    <header class="glass-header">
+    <!-- ВЕРХНЯЯ ШАПКА / NAVIGATION HEADER (ASTRYX BAR) -->
+    <header class="glass-header astryx-header">
       <div class="header-left">
         <div class="logo-wrapper">
-          <div class="radar-pulse">
-            <span class="pulse-ring"></span>
-            <span class="pulse-center"></span>
+          <div class="brand-mark">
+            <span class="brand-pulse-ring"></span>
+            <span class="brand-dot"></span>
           </div>
-          <div class="logo-text">
-            <span class="brand-title">CryptoRadar <span class="badge-pro">PRO</span></span>
-            <span class="live-status"><span class="live-dot"></span> LIVE BINANCE FEED</span>
+          <div class="brand-info">
+            <div class="brand-title-row">
+              <span class="brand-title">CryptoRadar</span>
+              <span class="badge-pro">PRO</span>
+            </div>
+            <span class="live-status">
+              <span class="live-dot"></span>
+              <span class="live-text">LIVE BINANCE FEED</span>
+            </span>
           </div>
         </div>
       </div>
@@ -47,109 +52,125 @@
       <div class="header-right">
         <div id="user-pill" class="user-pill glass-card-sm" title="Ваш профиль">
           <span class="user-avatar" id="user-avatar">👤</span>
-          <span class="user-name" id="user-name">Загрузка...</span>
+          <span class="user-name" id="user-name">Трейдер</span>
           <span class="sub-status-badge badge-free" id="vip-badge">FREE</span>
         </div>
-        <button id="btn-open-vip-header" class="btn-glow-vip" title="Активировать VIP">
-          <span class="icon">💎</span> <span class="text">VIP Доступ</span>
+        <button id="btn-open-vip-header" class="btn-astryx-vip" title="Активировать VIP">
+          <span class="btn-vip-icon">💎</span>
+          <span class="btn-vip-text">VIP Доступ</span>
         </button>
       </div>
     </header>
 
-    <!-- БЕГУЩИЙ ТИКЕР РЫНКА (КАРУСЕЛЬ) -->
-    <section class="ticker-bar-section">
-      <div class="ticker-scroll" id="ticker-scroll">
-        <!-- Генерируется динамически через app.js -->
-        <div class="ticker-item skeleton">Загрузка котировок...</div>
-      </div>
-    </section>
+    <!-- СВОДНЫЕ РЫНОЧНЫЕ ИНДИКАТОРЫ (ASTRYX METRIC CARDS) -->
+    <section class="section-container">
+      <div class="market-metrics-grid">
+        <!-- MetricCard 1: 24h Volume -->
+        <div class="metric-card glass-card">
+          <div class="metric-content">
+            <div class="metric-stat-row">
+              <span class="metric-num" id="market-vol">$114.8B</span>
+              <span class="metric-delta positive">
+                <svg class="astryx-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75"/></svg>
+                <span>+4.2%</span>
+              </span>
+            </div>
+            <span class="metric-label">Объем торгов (24ч Spot & Futures)</span>
+          </div>
+        </div>
 
-    <!-- СВОДНЫЕ РЫНОЧНЫЕ ИНДИКАТОРЫ (KPI CARDS) -->
-    <section class="market-metrics-grid">
-      <div class="metric-card glass-card">
-        <div class="metric-header">
-          <span class="metric-title">Индекс страха / жадности</span>
-          <span class="metric-icon">🧭</span>
+        <!-- MetricCard 2: Fear & Greed -->
+        <div class="metric-card glass-card">
+          <div class="metric-content">
+            <div class="metric-stat-row">
+              <span class="metric-num" id="fg-index">74</span>
+              <span class="metric-tag tag-greed" id="fg-label">Жадность</span>
+            </div>
+            <span class="metric-label">Индекс страха / жадности (Fear & Greed)</span>
+            <div class="astryx-progress-track">
+              <div class="astryx-progress-fill greed-fill" id="fg-bar" style="width: 74%;"></div>
+            </div>
+          </div>
         </div>
-        <div class="metric-value-row">
-          <span class="metric-num" id="fg-index">74</span>
-          <span class="metric-tag tag-greed" id="fg-label">Жадность</span>
-        </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill greed-fill" id="fg-bar" style="width: 74%;"></div>
-        </div>
-      </div>
 
-      <div class="metric-card glass-card">
-        <div class="metric-header">
-          <span class="metric-title">Доминация BTC</span>
-          <span class="metric-icon">👑</span>
+        <!-- MetricCard 3: BTC Dominance -->
+        <div class="metric-card glass-card">
+          <div class="metric-content">
+            <div class="metric-stat-row">
+              <span class="metric-num" id="btc-dom">57.2%</span>
+              <span class="metric-delta positive">
+                <svg class="astryx-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75"/></svg>
+                <span>+0.4%</span>
+              </span>
+            </div>
+            <span class="metric-label">Доминация Bitcoin в капитализации</span>
+          </div>
         </div>
-        <div class="metric-value-row">
-          <span class="metric-num" id="btc-dom">57.2%</span>
-          <span class="metric-change positive">+0.4%</span>
-        </div>
-        <span class="metric-sub">Капитализация альткоинов в сжатии</span>
-      </div>
 
-      <div class="metric-card glass-card">
-        <div class="metric-header">
-          <span class="metric-title">Объем торгов (24ч)</span>
-          <span class="metric-icon">💧</span>
-        </div>
-        <div class="metric-value-row">
-          <span class="metric-num" id="market-vol">$114.8B</span>
-          <span class="metric-tag tag-neutral">Высокий</span>
-        </div>
-        <span class="metric-sub">Торговая активность на споте и деривативах</span>
-      </div>
-
-      <div class="metric-card glass-card">
-        <div class="metric-header">
-          <span class="metric-title">Активные AI Сигналы</span>
-          <span class="metric-icon">🎯</span>
-        </div>
-        <div class="metric-value-row">
-          <span class="metric-num" id="active-signals-count">8</span>
-          <span class="metric-tag tag-accent">В радаре</span>
-        </div>
-        <span class="metric-sub">5 VIP сигналов доступны подписчикам</span>
-      </div>
-    </section>
-
-    <!-- СЕКЦИЯ TRADINGVIEW ГРАФИКА -->
-    <section class="chart-section glass-card">
-      <div class="chart-header">
-        <div class="chart-asset-info">
-          <span class="chart-symbol" id="chart-symbol-title">BTC/USDT</span>
-          <span class="chart-price" id="chart-price-display">$91,850.00</span>
-          <span class="chart-change positive" id="chart-change-display">+3.45%</span>
-        </div>
-        
-        <div class="chart-switchers">
-          <span class="switcher-label">Быстрый переход:</span>
-          <div class="symbol-pills">
-            <button class="coin-pill active" data-symbol="BTCUSDT">BTC</button>
-            <button class="coin-pill" data-symbol="ETHUSDT">ETH</button>
-            <button class="coin-pill" data-symbol="SOLUSDT">SOL</button>
-            <button class="coin-pill" data-symbol="TONUSDT">TON</button>
-            <button class="coin-pill" data-symbol="XRPUSDT">XRP</button>
+        <!-- MetricCard 4: Active AI Signals -->
+        <div class="metric-card glass-card">
+          <div class="metric-content">
+            <div class="metric-stat-row">
+              <span class="metric-num" id="active-signals-count">8</span>
+              <span class="metric-tag tag-vip">5 VIP Сетапов</span>
+            </div>
+            <span class="metric-label">Активные AI Сигналы в радаре</span>
           </div>
         </div>
       </div>
-      
-      <!-- Контейнер для виджета TradingView -->
-      <div class="chart-container-box">
-        <div id="tv_chart_container" class="tv-chart-frame"></div>
+    </section>
+
+    <!-- ОБЗОР РЫНКА / MARKET TODAY С 24Ч СПАРКЛАЙНАМИ (ASTRYX MARKET CARDS) -->
+    <section class="section-container">
+      <div class="section-header-compact">
+        <div>
+          <h2 class="astryx-heading-2">Обзор рынка (Market Today)</h2>
+          <p class="astryx-subheading">Динамика ключевых активов за последние 24 часа с графиками тренда</p>
+        </div>
+      </div>
+
+      <!-- Сетка карточек индексов и активов (совместима с ticker-scroll) -->
+      <div class="market-indices-grid ticker-scroll" id="ticker-scroll">
+        <div class="ticker-item skeleton">Загрузка котировок Binance...</div>
+      </div>
+    </section>
+
+    <!-- СЕКЦИЯ TRADINGVIEW ГРАФИКА В РАМКЕ ASTRYX CARD -->
+    <section class="section-container">
+      <div class="chart-section glass-card">
+        <div class="chart-header">
+          <div class="chart-asset-info">
+            <span class="chart-symbol" id="chart-symbol-title">BTC/USDT</span>
+            <span class="chart-price" id="chart-price-display">$91,850.00</span>
+            <span class="chart-change positive" id="chart-change-display">+3.45%</span>
+          </div>
+          
+          <div class="chart-switchers">
+            <div class="symbol-pills">
+              <button class="coin-pill active" data-symbol="BTCUSDT">BTC</button>
+              <button class="coin-pill" data-symbol="ETHUSDT">ETH</button>
+              <button class="coin-pill" data-symbol="SOLUSDT">SOL</button>
+              <button class="coin-pill" data-symbol="TONUSDT">TON</button>
+              <button class="coin-pill" data-symbol="XRPUSDT">XRP</button>
+              <button class="coin-pill" data-symbol="BNBUSDT">BNB</button>
+              <button class="coin-pill" data-symbol="DOGEUSDT">DOGE</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Контейнер для виджета TradingView -->
+        <div class="chart-container-box">
+          <div id="tv_chart_container" class="tv-chart-frame"></div>
+        </div>
       </div>
     </section>
 
     <!-- СЕКЦИЯ AI СИГНАЛОВ И ТОРГОВЫХ СЕТАПОВ -->
-    <section class="signals-section">
+    <section class="section-container signals-section">
       <div class="section-title-row">
         <div>
-          <h2 class="section-title">🎯 AI Сигналы и Торговые Сетапы</h2>
-          <p class="section-subtitle">Машинный скоринг объемов, стакана и многотаймфреймовых RSI дивергенций</p>
+          <h2 class="astryx-heading-2">🎯 AI Сигналы и Торговые Сетапы</h2>
+          <p class="astryx-subheading">Машинный скоринг объемов, стакана и многотаймфреймовых RSI дивергенций</p>
         </div>
         <div class="signals-filter-tabs">
           <button class="filter-tab active" data-filter="all">Все (5)</button>
@@ -160,59 +181,61 @@
       </div>
 
       <div class="signals-cards-grid" id="signals-grid">
-        <!-- Генерируется динамически через app.js -->
         <div class="signal-card skeleton">Загрузка торговых сигналов...</div>
       </div>
     </section>
 
-    <!-- СЕКЦИЯ РАДАРА RSI И АНОМАЛИЙ -->
-    <section class="scanner-section glass-card">
-      <div class="scanner-header-row">
-        <div>
-          <h2 class="section-title">🚨 Радар Перекупленности и Перепроданности</h2>
-          <p class="section-subtitle">Мониторинг индекса относительной силы (RSI 14) на таймфреймах 1H и 4H</p>
-        </div>
-        <div class="scanner-controls">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="scanner-search" placeholder="Поиск (BTC, SOL, TON...)" autocomplete="off">
+    <!-- СЕКЦИЯ ТАБЛИЦЫ КОТИРОВОК И РАДАРА RSI (ASTRYX TABLE PATTERN) -->
+    <section class="section-container">
+      <div class="scanner-section glass-card">
+        <div class="scanner-header-row">
+          <div>
+            <h2 class="astryx-heading-2">🚨 Радар Перекупленности и Перепроданности</h2>
+            <p class="astryx-subheading">Мониторинг индекса относительной силы (RSI 14) на таймфреймах 1H и 4H</p>
           </div>
-          <button id="btn-refresh-market" class="btn-refresh" title="Обновить котировки">
-            <span class="refresh-icon">🔄</span>
-          </button>
+          <div class="scanner-controls">
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="scanner-search" placeholder="Поиск (BTC, SOL, TON...)" autocomplete="off">
+            </div>
+            <button id="btn-refresh-market" class="btn-refresh" title="Обновить котировки">
+              <span class="refresh-icon">🔄</span>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div class="table-responsive">
-        <table class="radar-table" id="radar-table">
-          <thead>
-            <tr>
-              <th>Активы</th>
-              <th>Цена</th>
-              <th>24ч Динамика</th>
-              <th>RSI (1H)</th>
-              <th>RSI (4H)</th>
-              <th>Статус / Зона</th>
-              <th>Действие</th>
-            </tr>
-          </thead>
-          <tbody id="radar-table-body">
-            <tr><td colspan="7" class="loading-cell">Загрузка данных сканера...</td></tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="radar-table" id="radar-table">
+            <thead>
+              <tr>
+                <th>Тикер / Актив</th>
+                <th>Цена (USD)</th>
+                <th>24ч Изменение</th>
+                <th>24ч Тренд</th>
+                <th>RSI (1H)</th>
+                <th>RSI (4H)</th>
+                <th>Зона / Статус</th>
+                <th>Действие</th>
+              </tr>
+            </thead>
+            <tbody id="radar-table-body">
+              <tr><td colspan="8" class="loading-cell">Загрузка данных сканера...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
-    <!-- ПОДВАЛ WEBAPP -->
+    <!-- ПОДВАЛ WEBAPP (ИНСТИТУЦИОНАЛЬНЫЙ ФУТЕР ASTRYX) -->
     <footer class="app-footer">
       <div class="footer-content">
-        <p>© 2026 CryptoRadar PRO Platform. Все права защищены.</p>
+        <p class="copyright">© 2026 CryptoRadar PRO Platform. Все права защищены.</p>
         <p class="disclaimer">Не является индивидуальной инвестиционной рекомендацией. Торговля криптовалютой сопряжена с высокими рисками.</p>
       </div>
     </footer>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО VIP PAYWALL (ПОДПИСКА) -->
+  <!-- МОДАЛЬНОЕ ОКНО VIP PAYWALL (ASTRYX DIALOG) -->
   <div id="vip-modal" class="modal-overlay hidden">
     <div class="modal-backdrop" id="modal-backdrop"></div>
     <div class="modal-content glass-card-modal">
@@ -258,7 +281,6 @@
 
       <!-- Выбор тарифа -->
       <div class="tariffs-selection" id="tariffs-container">
-        <!-- Заполняется динамически из app.js -->
         <div class="tariff-skeleton">Загрузка тарифов...</div>
       </div>
 
@@ -274,7 +296,7 @@
         </button>
       </div>
 
-      <!-- Реквизиты прямого перевода (скрыты по умолчанию, открываются по клику) -->
+      <!-- Реквизиты прямого перевода (скрыты по умолчанию) -->
       <div id="manual-payment-box" class="manual-payment-box hidden">
         <div class="manual-header">Реквизиты для оплаты по СБП:</div>
         <div class="details-content" id="manual-details-text">Загрузка реквизитов...</div>
