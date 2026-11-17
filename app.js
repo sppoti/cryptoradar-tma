@@ -180,8 +180,8 @@
     try {
       tg.ready();
       tg.expand();
-      if (tg.setHeaderColor) tg.setHeaderColor('#0b0f17');
-      if (tg.setBackgroundColor) tg.setBackgroundColor('#0b0f17');
+      if (tg.setHeaderColor) tg.setHeaderColor('#080B0E');
+      if (tg.setBackgroundColor) tg.setBackgroundColor('#080B0E');
     } catch (e) {
       console.warn('Telegram SDK initialization note:', e);
     }
@@ -225,7 +225,7 @@
     return points;
   }
 
-  // Pure SVG Sparkline Renderer (Astryx Vector Chart)
+  // Pure SVG Sparkline Renderer (Astryx Vector Chart & Sci-Fi HUD Glow)
   function renderSvgSparkline(data, positive, height = 40) {
     if (!data || data.length === 0) return '';
     const min = Math.min(...data);
@@ -244,20 +244,22 @@
     });
 
     const pathD = `M ${points.join(' L ')}`;
-    const strokeColor = positive ? '#10b981' : '#f43f5e';
+    // Неоновый мятный #00FFA3 для роста и неоновый малиново-красный #FF2A6D для падения из референсов
+    const strokeColor = positive ? '#00FFA3' : '#FF2A6D';
+    const glowFilterColor = positive ? 'rgba(0, 255, 163, 0.45)' : 'rgba(255, 42, 109, 0.45)';
     const gradId = `spark-grad-${Math.random().toString(36).substr(2, 8)}`;
     const areaD = `${pathD} L ${W},${H} L 0,${H} Z`;
 
     return `
-      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width: 100%; height: ${H}px; display: block; overflow: visible;">
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width: 100%; height: ${H}px; display: block; overflow: visible; filter: drop-shadow(0 0 5px ${glowFilterColor});">
         <defs>
           <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.22" />
+            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.30" />
             <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0" />
           </linearGradient>
         </defs>
         <path d="${areaD}" fill="url(#${gradId})" />
-        <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${height <= 24 ? 1.5 : 1.8}" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${height <= 24 ? 1.6 : 2.0}" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
     `;
   }
@@ -419,7 +421,7 @@
           theme: 'dark',
           style: '1',
           locale: 'ru',
-          toolbar_bg: '#0b0f17',
+          toolbar_bg: '#080B0E',
           enable_publishing: false,
           hide_top_toolbar: false,
           hide_legend: false,
@@ -435,10 +437,10 @@
             'header_screenshot'
           ],
           overrides: {
-            'paneProperties.background': '#0b0f17',
-            'paneProperties.vertGridProperties.color': 'rgba(255, 255, 255, 0.04)',
-            'paneProperties.horzGridProperties.color': 'rgba(255, 255, 255, 0.04)',
-            'scalesProperties.textColor': '#94a3b8'
+            'paneProperties.background': '#080B0E',
+            'paneProperties.vertGridProperties.color': 'rgba(0, 255, 163, 0.05)',
+            'paneProperties.horzGridProperties.color': 'rgba(0, 255, 163, 0.05)',
+            'scalesProperties.textColor': '#8E9FAD'
           }
         });
         return;
@@ -797,16 +799,16 @@
       `;
 
       let rsi1hClass = 'rsi-neutral';
-      let statusBadge = '<span class="status-badge-cell" style="background: rgba(148, 163, 184, 0.12); color: #cbd5e1;">Нейтрально ⚪</span>';
+      let statusBadge = '<span class="status-badge-cell" style="background: rgba(142, 159, 173, 0.12); color: #8E9FAD; border: 1px solid rgba(142, 159, 173, 0.2);">Нейтрально ⚪</span>';
       
       if (t.rsi_1h <= 35) {
         rsi1hClass = 'rsi-oversold';
-        statusBadge = '<span class="status-badge-cell" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">Перепродан 🟢</span>';
+        statusBadge = '<span class="status-badge-cell" style="background: rgba(0, 255, 163, 0.14); color: #00FFA3; border: 1px solid rgba(0, 255, 163, 0.3); box-shadow: 0 0 8px rgba(0, 255, 163, 0.2);">Перепродан 🟢</span>';
       } else if (t.rsi_1h >= 65) {
         rsi1hClass = 'rsi-overbought';
-        statusBadge = '<span class="status-badge-cell" style="background: rgba(244, 63, 94, 0.12); color: #f43f5e;">Перекуплен 🔴</span>';
+        statusBadge = '<span class="status-badge-cell" style="background: rgba(255, 42, 109, 0.14); color: #FF2A6D; border: 1px solid rgba(255, 42, 109, 0.3); box-shadow: 0 0 8px rgba(255, 42, 109, 0.2);">Перекуплен 🔴</span>';
       } else if (t.change_24h > 3.0) {
-        statusBadge = '<span class="status-badge-cell" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8;">Импульс 🚀</span>';
+        statusBadge = '<span class="status-badge-cell" style="background: rgba(0, 229, 255, 0.14); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3); box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);">Импульс 🚀</span>';
       }
 
       tr.innerHTML = `
