@@ -1,6 +1,6 @@
 /**
  * CryptoRadar PRO — Telegram Mini App & WebApp Client Engine
- * Institutional Astryx Design System (Pattern: dashboard-composition)
+ * Institutional Astryx Design System & Tactical HUD FinTech Cockpit
  * Live Binance Feed, TradingView Integration, SVG Sparklines & Telegram Stars / SBP Paywall
  */
 
@@ -53,19 +53,19 @@
       stars: 350,
       rub_price: 1200,
       days: 90,
-      description: 'Доступ на 90 дней со скидкой 20% + закрытый чат институциональных трейдеров.',
+      description: 'Доступ на 90 дней со скидкой 20% + закрытый чат трейдеров.',
       popular: true,
-      badge: 'Хит продаж 🔥'
+      badge: 'Хит'
     },
     {
       key: 'sub_life',
-      title: 'VIP Навсегда (Lifetime)',
+      title: 'VIP Бессрочный (Lifetime)',
       stars: 990,
       rub_price: 3500,
       days: 3650,
-      description: 'Бессрочный доступ ко всем сигналам, закрытому клубу и будущим модулям.',
+      description: 'Бессрочный доступ ко всем сигналам, закрытому клубу и обновлениям.',
       popular: false,
-      badge: 'Максимальная выгода 💎'
+      badge: 'PRO VIP'
     }
   ];
 
@@ -77,7 +77,7 @@
       ticker: 'BTC',
       name: 'Bitcoin',
       type: 'LONG',
-      badge: 'STRONG BUY 🚀',
+      badge: 'STRONG BUY',
       confidence: 93,
       timeframe: '1H / 4H Swing',
       entry_range: '$91,200 - $91,900',
@@ -85,7 +85,7 @@
       tp2: '$97,800 (+7.1%)',
       stop_loss: '$89,800 (-1.8%)',
       rsi_1h: 34.2,
-      rationale: 'Бычья дивергенция на 1ч RSI + удержание институционального зеркального спроса. Рост открытого интереса.',
+      rationale: 'Бычья дивергенция на 1ч RSI + удержание зеркального спроса. Рост открытого интереса.',
       is_vip: false,
       created_at: '12 мин назад'
     },
@@ -95,7 +95,7 @@
       ticker: 'SOL',
       name: 'Solana',
       type: 'LONG',
-      badge: 'ACCUMULATE 🟢',
+      badge: 'ACCUMULATE',
       confidence: 88,
       timeframe: '1H Breakout',
       entry_range: '$216.00 - $218.50',
@@ -113,7 +113,7 @@
       ticker: 'TON',
       name: 'Toncoin',
       type: 'LONG',
-      badge: 'VIP PRO 💎',
+      badge: 'VIP PRO',
       confidence: 96,
       timeframe: '4H Ecosystem Trend',
       entry_range: '$5.50 - $5.65',
@@ -121,7 +121,7 @@
       tp2: '$7.10 (+26.8%)',
       stop_loss: '$5.20 (-6.2%)',
       rsi_1h: 44.8,
-      rationale: 'Индекс аномальной активности смарт-китов экосистемы TON. Пробой нисходящего клина с закреплением.',
+      rationale: 'Аномальная активность смарт-китов экосистемы TON. Пробой нисходящего клина с закреплением.',
       is_vip: true,
       created_at: '1 час назад'
     },
@@ -131,7 +131,7 @@
       ticker: 'XRP',
       name: 'Ripple',
       type: 'SHORT',
-      badge: 'VIP HEDGE 🔴',
+      badge: 'VIP HEDGE',
       confidence: 85,
       timeframe: '15M Scalp',
       entry_range: '$1.15 - $1.18',
@@ -149,7 +149,7 @@
       ticker: 'DOGE',
       name: 'Dogecoin',
       type: 'LONG',
-      badge: 'VIP FLASH ⚡',
+      badge: 'VIP FLASH',
       confidence: 91,
       timeframe: '1H Momentum',
       entry_range: '$0.380 - $0.392',
@@ -157,7 +157,7 @@
       tp2: '$0.510 (+30.5%)',
       stop_loss: '$0.352 (-8.1%)',
       rsi_1h: 42.0,
-      rationale: 'Сжатие волатильности по полосам Боллинджера перед мощным импульсным выходом из консолидации.',
+      rationale: 'Сжатие волатильности по полосам Боллинджера перед импульсным выходом из консолидации.',
       is_vip: true,
       created_at: '3 часа назад'
     }
@@ -193,6 +193,8 @@
       if (!tg?.HapticFeedback) return;
       if (style === 'success' || style === 'warning' || style === 'error') {
         tg.HapticFeedback.notificationOccurred(style);
+      } else if (style === 'selection') {
+        tg.HapticFeedback.selectionChanged();
       } else {
         tg.HapticFeedback.impactOccurred(style);
       }
@@ -201,8 +203,7 @@
     }
   }
 
-  // --- ASTRYX SPARKLINE ENGINE (From dashboard-composition page.tsx) ---
-  // Deterministic LCG wave algorithm for session-like rhythm and 24h market fluctuations
+  // --- ASTRYX SPARKLINE ENGINE ---
   function genSpark(seed, start, end, volatility, N = 48) {
     let s = (seed >>> 0) || 1337;
     const rand = () => {
@@ -225,8 +226,8 @@
     return points;
   }
 
-  // Pure SVG Sparkline Renderer (Astryx Vector Chart & Sci-Fi HUD Glow)
-  function renderSvgSparkline(data, positive, height = 40) {
+  // Pure SVG Sparkline Renderer
+  function renderSvgSparkline(data, positive, height = 36) {
     if (!data || data.length === 0) return '';
     const min = Math.min(...data);
     const max = Math.max(...data);
@@ -244,22 +245,20 @@
     });
 
     const pathD = `M ${points.join(' L ')}`;
-    // Неоновый мятный #00FFA3 для роста и неоновый малиново-красный #FF2A6D для падения из референсов
     const strokeColor = positive ? '#00FFA3' : '#FF2A6D';
-    const glowFilterColor = positive ? 'rgba(0, 255, 163, 0.45)' : 'rgba(255, 42, 109, 0.45)';
     const gradId = `spark-grad-${Math.random().toString(36).substr(2, 8)}`;
     const areaD = `${pathD} L ${W},${H} L 0,${H} Z`;
 
     return `
-      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width: 100%; height: ${H}px; display: block; overflow: visible; filter: drop-shadow(0 0 5px ${glowFilterColor});">
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width: 100%; height: ${H}px; display: block; overflow: visible;">
         <defs>
           <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.30" />
+            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.25" />
             <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0" />
           </linearGradient>
         </defs>
         <path d="${areaD}" fill="url(#${gradId})" />
-        <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${height <= 24 ? 1.6 : 2.0}" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${height <= 24 ? 1.5 : 1.8}" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
     `;
   }
@@ -319,6 +318,7 @@
     filterTabs: document.querySelectorAll('.filter-tab'),
     radarTableBody: document.getElementById('radar-table-body'),
     scannerSearch: document.getElementById('scanner-search'),
+    btnClearSearch: document.getElementById('btn-clear-search'),
     btnRefreshMarket: document.getElementById('btn-refresh-market'),
     // Модальное окно VIP
     vipModal: document.getElementById('vip-modal'),
@@ -339,7 +339,7 @@
 
   // --- ВСПЛЫВАЮЩИЕ УВЕДОМЛЕНИЯ (TOAST) ---
   let toastTimer = null;
-  function showToast(message, duration = 3000) {
+  function showToast(message, duration = 2800) {
     if (!el.toast) return;
     el.toast.textContent = message;
     el.toast.classList.remove('hidden');
@@ -401,10 +401,13 @@
     }
 
     el.symbolPills.forEach(pill => {
-      if (pill.dataset.symbol === symbol) {
+      const isTarget = pill.dataset.symbol === symbol;
+      if (isTarget) {
         pill.classList.add('active');
+        pill.setAttribute('aria-selected', 'true');
       } else {
         pill.classList.remove('active');
+        pill.setAttribute('aria-selected', 'false');
       }
     });
 
@@ -445,7 +448,7 @@
         });
         return;
       } catch (err) {
-        console.warn('Ошибка TradingView.widget, переключаемся на iframe embed:', err);
+        console.warn('TradingView widget initialization fallback:', err);
       }
     }
 
@@ -460,7 +463,7 @@
     iframe.style.width = '100%';
     iframe.style.height = '100%';
     iframe.style.border = 'none';
-    iframe.style.borderRadius = '12px';
+    iframe.style.borderRadius = '10px';
     iframe.setAttribute('allowfullscreen', 'true');
     container.appendChild(iframe);
   }
@@ -507,7 +510,7 @@
 
   // 2. Получение актуальных котировок (Прямой Binance REST API или Fallback)
   async function fetchMarketOverview() {
-    // А) Попытка через backend API (если доступен локальный сервер)
+    // А) Попытка через backend API
     if (API_BASE) {
       try {
         const controller = new AbortController();
@@ -536,7 +539,6 @@
       const encodedSymbols = encodeURIComponent(JSON.stringify(symbolsList));
       let rawData = null;
 
-      // 1-я попытка: data-api.binance.vision
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
@@ -547,7 +549,6 @@
         // fallback
       }
 
-      // 2-я попытка: api.binance.com
       if (!rawData) {
         try {
           const controller = new AbortController();
@@ -613,7 +614,6 @@
           else if (chg > 3.0) status = 'bullish';
           else if (chg < -3.0) status = 'bearish';
 
-          // Генерируем спарклайн точно на базе реального 24ч диапазона цен
           const volFactor = price > 0 ? Math.max(1.5, Math.min(6.0, ((high - low) / price) * 50)) : 2.5;
           const spark = genSpark(coin.seed, open, price, volFactor, 48);
 
@@ -638,7 +638,7 @@
         const globalMetrics = {
           btc_dominance: 57.2,
           fear_greed_index: 74,
-          fear_greed_label: 'Жадность (Greed)',
+          fear_greed_label: 'Жадность',
           market_vol_24h: globalVolFormatted,
           active_signals_count: 8,
           tracked_assets: tickersData.length
@@ -687,7 +687,7 @@
     updateActiveCoinHeaderPrice(fallbackTickersWithSpark);
   }
 
-  // Рендеринг KPI карточек (Astryx MetricCard)
+  // Рендеринг KPI карточек
   function renderMarketMetrics(g) {
     if (!g) return;
     if (el.fgIndex) el.fgIndex.textContent = g.fear_greed_index;
@@ -698,7 +698,7 @@
     if (el.activeSignalsCount) el.activeSignalsCount.textContent = g.active_signals_count || 8;
   }
 
-  // Рендеринг карточек индексов и активов (Astryx MarketCard с 24ч SVG спарклайнами)
+  // Рендеринг карточек индексов и активов
   function renderMarketCards(tickers) {
     if (!el.tickerScroll || !tickers) return;
     el.tickerScroll.innerHTML = '';
@@ -710,15 +710,18 @@
       const sign = isPositive ? '+' : '';
       const isActive = t.symbol === state.activeSymbol ? 'active' : '';
 
-      // Sparkline данные
       const sparkData = t.spark || genSpark(1337, t.price * 0.98, t.price, 2.5);
-      const sparkSvg = renderSvgSparkline(sparkData, isPositive, 40);
+      const sparkSvg = renderSvgSparkline(sparkData, isPositive, 36);
 
       const arrowSvg = isPositive
-        ? `<svg class="astryx-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75"/></svg>`
-        : `<svg class="astryx-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75"/></svg>`;
+        ? `<svg class="astryx-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75"/></svg>`
+        : `<svg class="astryx-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75"/></svg>`;
 
       card.className = `market-card glass-card ${isActive}`;
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `${t.name} (${t.ticker}): ${t.price_formatted}, ${sign}${t.change_24h}% за 24 часа`);
+
       card.innerHTML = `
         <div class="market-card-top">
           <div class="market-card-title-box">
@@ -740,13 +743,21 @@
         </div>
       `;
 
-      card.addEventListener('click', () => {
+      const selectCoin = () => {
         triggerHaptic('light');
         renderTradingViewChart(t.symbol);
         document.querySelectorAll('.market-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
         const chartBox = document.querySelector('.chart-section');
         if (chartBox) chartBox.scrollIntoView({ behavior: 'smooth' });
+      };
+
+      card.addEventListener('click', selectCoin);
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectCoin();
+        }
       });
 
       el.tickerScroll.appendChild(card);
@@ -766,7 +777,7 @@
     }
   }
 
-  // 3. Таблица Радара RSI и Котировок (Astryx Table Pattern)
+  // 3. Таблица Радара RSI и Котировок
   function renderScannerTable(tickers) {
     if (!el.radarTableBody || !tickers) return;
     el.radarTableBody.innerHTML = '';
@@ -778,7 +789,27 @@
     });
 
     if (filtered.length === 0) {
-      el.radarTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: var(--text-muted);">Активов по запросу "${query}" не найдено</td></tr>`;
+      el.radarTableBody.innerHTML = `
+        <tr>
+          <td colspan="8">
+            <div class="scanner-empty-state">
+              <span class="empty-state-title">Актив не найден</span>
+              <p class="empty-state-desc">По запросу «${query}» нет результатов в списке отслеживаемых монет.</p>
+              <button type="button" class="btn-reset-filter" id="btn-reset-search">Сбросить поиск</button>
+            </div>
+          </td>
+        </tr>
+      `;
+      const resetBtn = document.getElementById('btn-reset-search');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          triggerHaptic('light');
+          if (el.scannerSearch) el.scannerSearch.value = '';
+          if (el.btnClearSearch) el.btnClearSearch.classList.add('hidden');
+          state.searchQuery = '';
+          renderScannerTable(tickers);
+        });
+      }
       return;
     }
 
@@ -787,11 +818,9 @@
       const isPos = t.change_24h >= 0;
       const chgClass = isPos ? 'positive' : 'negative';
 
-      // 24h Trend Sparkline (24px height)
       const sparkData = t.spark || genSpark(1337, t.price * 0.98, t.price, 2.5);
-      const trendSvg = renderSvgSparkline(sparkData, isPos, 24);
+      const trendSvg = renderSvgSparkline(sparkData, isPos, 22);
 
-      // Astryx ColoredValue Badge
       const coloredValueBadge = `
         <span class="colored-value-badge ${isPos ? 'green' : 'red'}">
           ${isPos ? '+' : ''}${t.change_24h}%
@@ -799,16 +828,16 @@
       `;
 
       let rsi1hClass = 'rsi-neutral';
-      let statusBadge = '<span class="status-badge-cell" style="background: rgba(142, 159, 173, 0.12); color: #8E9FAD; border: 1px solid rgba(142, 159, 173, 0.2);">Нейтрально ⚪</span>';
+      let statusBadge = '<span class="status-badge-cell" style="background: rgba(148, 163, 184, 0.12); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.22);">Нейтрально</span>';
       
       if (t.rsi_1h <= 35) {
         rsi1hClass = 'rsi-oversold';
-        statusBadge = '<span class="status-badge-cell" style="background: rgba(0, 255, 163, 0.14); color: #00FFA3; border: 1px solid rgba(0, 255, 163, 0.3); box-shadow: 0 0 8px rgba(0, 255, 163, 0.2);">Перепродан 🟢</span>';
+        statusBadge = '<span class="status-badge-cell" style="background: rgba(0, 255, 163, 0.12); color: #00FFA3; border: 1px solid rgba(0, 255, 163, 0.3);">Перепродан</span>';
       } else if (t.rsi_1h >= 65) {
         rsi1hClass = 'rsi-overbought';
-        statusBadge = '<span class="status-badge-cell" style="background: rgba(255, 42, 109, 0.14); color: #FF2A6D; border: 1px solid rgba(255, 42, 109, 0.3); box-shadow: 0 0 8px rgba(255, 42, 109, 0.2);">Перекуплен 🔴</span>';
+        statusBadge = '<span class="status-badge-cell" style="background: rgba(255, 42, 109, 0.12); color: #FF2A6D; border: 1px solid rgba(255, 42, 109, 0.3);">Перекуплен</span>';
       } else if (t.change_24h > 3.0) {
-        statusBadge = '<span class="status-badge-cell" style="background: rgba(0, 229, 255, 0.14); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3); box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);">Импульс 🚀</span>';
+        statusBadge = '<span class="status-badge-cell" style="background: rgba(0, 229, 255, 0.12); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3);">Импульс</span>';
       }
 
       tr.innerHTML = `
@@ -827,7 +856,7 @@
         <td class="rsi-cell ${rsi1hClass}">${t.rsi_1h || '—'}</td>
         <td class="rsi-cell rsi-neutral">${t.rsi_4h || '—'}</td>
         <td>${statusBadge}</td>
-        <td><button class="btn-chart-jump" data-symbol="${t.symbol}">График</button></td>
+        <td><button type="button" class="btn-chart-jump" data-symbol="${t.symbol}">График</button></td>
       `;
 
       tr.querySelector('.btn-chart-jump').addEventListener('click', (e) => {
@@ -847,7 +876,7 @@
     });
   }
 
-  // 4. Загрузка и рендеринг AI Сигналов (Astryx Signal Cards)
+  // 4. Загрузка и рендеринг AI Сигналов
   async function fetchSignals() {
     if (API_BASE) {
       try {
@@ -877,7 +906,12 @@
     });
 
     if (filtered.length === 0) {
-      el.signalsGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 32px;">Сигналов по выбранному фильтру не найдено.</div>`;
+      el.signalsGrid.innerHTML = `
+        <div class="signal-card" style="grid-column: 1/-1; text-align: center; padding: 32px 16px;">
+          <div class="empty-state-title">Нет активных сигналов</div>
+          <div class="empty-state-desc" style="margin: 4px auto 0;">По фильтру ${filter.toUpperCase()} сейчас нет активных сетапов. Алгоритм непрерывно сканирует рынок.</div>
+        </div>
+      `;
       return;
     }
 
@@ -900,7 +934,7 @@
 
           <div class="signal-confidence-row">
             <div class="signal-confidence-labels">
-              <span class="conf-label">Уверенность AI модели:</span>
+              <span class="conf-label">Уверенность модели:</span>
               <span class="conf-value">${s.confidence}% Точность</span>
             </div>
             <div class="signal-confidence-track">
@@ -928,21 +962,21 @@
           </div>
 
           <div class="signal-rationale">
-            💡 <strong>Аналитический триггер:</strong> ${s.rationale}
+            <strong>Триггер:</strong> ${s.rationale}
           </div>
 
           <div class="signal-footer">
             <span>RSI (1H): <strong>${s.rsi_1h}</strong></span>
-            <span>🕒 ${s.created_at}</span>
+            <span>${s.created_at}</span>
           </div>
         </div>
 
         ${isLocked ? `
           <div class="vip-card-overlay">
-            <div class="vip-lock-icon">🔒</div>
+            <div class="vip-lock-icon" aria-hidden="true">🔒</div>
             <div class="vip-overlay-title">VIP Эксклюзивный Сигнал</div>
             <div class="vip-overlay-desc">Сетап высокой точности (${s.confidence}%) с подтвержденными целями входа.</div>
-            <button class="btn-unlock-vip-card" data-key="unlock">Разблокировать VIP 💎</button>
+            <button type="button" class="btn-unlock-vip-card" data-key="unlock">Разблокировать VIP</button>
           </div>
         ` : ''}
       `;
@@ -963,7 +997,7 @@
     });
   }
 
-  // 5. Загрузка тарифов и модальное окно оплаты (Astryx Paywall)
+  // 5. Загрузка тарифов и модальное окно оплаты
   async function fetchTariffs() {
     if (API_BASE) {
       try {
@@ -989,6 +1023,9 @@
       const isSelected = t.key === state.selectedTariffKey;
       item.className = `tariff-card-radio ${isSelected ? 'active' : ''}`;
       item.dataset.key = t.key;
+      item.setAttribute('role', 'radio');
+      item.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+      item.setAttribute('tabindex', '0');
 
       item.innerHTML = `
         ${t.popular || t.badge ? `<span class="tariff-badge-chip">${t.badge}</span>` : ''}
@@ -1002,12 +1039,24 @@
         </div>
       `;
 
-      item.addEventListener('click', () => {
+      const selectTariff = () => {
         triggerHaptic('light');
         state.selectedTariffKey = t.key;
-        document.querySelectorAll('.tariff-card-radio').forEach(r => r.classList.remove('active'));
+        document.querySelectorAll('.tariff-card-radio').forEach(r => {
+          r.classList.remove('active');
+          r.setAttribute('aria-checked', 'false');
+        });
         item.classList.add('active');
+        item.setAttribute('aria-checked', 'true');
         updatePayButtonsText(t);
+      };
+
+      item.addEventListener('click', selectTariff);
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectTariff();
+        }
       });
 
       el.tariffsContainer.appendChild(item);
@@ -1031,6 +1080,9 @@
     if (el.vipModal) {
       el.vipModal.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
+      if (el.btnOpenVipHeader) {
+        el.btnOpenVipHeader.setAttribute('aria-expanded', 'true');
+      }
       if (tg?.BackButton) {
         tg.BackButton.show();
         tg.BackButton.onClick(closeVipModal);
@@ -1043,6 +1095,9 @@
     if (el.vipModal) {
       el.vipModal.classList.add('hidden');
       document.body.style.overflow = '';
+      if (el.btnOpenVipHeader) {
+        el.btnOpenVipHeader.setAttribute('aria-expanded', 'false');
+      }
       if (tg?.BackButton) {
         tg.BackButton.hide();
       }
@@ -1055,8 +1110,12 @@
   el.filterTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       triggerHaptic('light');
-      el.filterTabs.forEach(t => t.classList.remove('active'));
+      el.filterTabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
       tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
       state.activeFilter = tab.dataset.filter;
       renderSignals();
     });
@@ -1078,6 +1137,29 @@
   if (el.scannerSearch) {
     el.scannerSearch.addEventListener('input', (e) => {
       state.searchQuery = e.target.value;
+      if (el.btnClearSearch) {
+        if (state.searchQuery.trim().length > 0) {
+          el.btnClearSearch.classList.remove('hidden');
+        } else {
+          el.btnClearSearch.classList.add('hidden');
+        }
+      }
+      if (state.marketData?.tickers) {
+        renderScannerTable(state.marketData.tickers);
+      }
+    });
+  }
+
+  // Очистка поиска
+  if (el.btnClearSearch) {
+    el.btnClearSearch.addEventListener('click', () => {
+      triggerHaptic('light');
+      if (el.scannerSearch) {
+        el.scannerSearch.value = '';
+        el.scannerSearch.focus();
+      }
+      el.btnClearSearch.classList.add('hidden');
+      state.searchQuery = '';
       if (state.marketData?.tickers) {
         renderScannerTable(state.marketData.tickers);
       }
@@ -1090,7 +1172,7 @@
       triggerHaptic('medium');
       el.btnRefreshMarket.classList.add('spinning');
       await Promise.all([fetchMarketOverview(), fetchSignals()]);
-      showToast('Котировки и спарклайны Binance обновлены');
+      showToast('Котировки Binance обновлены');
       setTimeout(() => el.btnRefreshMarket.classList.remove('spinning'), 600);
     });
   }
@@ -1114,7 +1196,7 @@
       const tariffKey = currentTariff.key;
       const deepLink = `https://t.me/${BOT_USERNAME}?start=pay_${tariffKey}`;
 
-      showToast(`Открытие счёта Telegram Stars (${currentTariff.stars} ⭐)...`);
+      showToast(`Открытие счёта Stars (${currentTariff.stars} ⭐)...`);
 
       setTimeout(() => {
         if (tg && typeof tg.openTelegramLink === 'function') {
@@ -1125,7 +1207,7 @@
         } else {
           window.open(deepLink, '_blank');
         }
-      }, 500);
+      }, 400);
     });
   }
 
@@ -1138,7 +1220,7 @@
         el.manualPaymentBox.classList.toggle('hidden');
         if (isHidden) {
           el.manualPaymentBox.scrollIntoView({ behavior: 'smooth' });
-          copyToClipboard(CARD_NUMBER, `Реквизиты открыты! Номер карты ${CARD_NUMBER} скопирован.`);
+          copyToClipboard(CARD_NUMBER, `Номер карты скопирован: ${CARD_NUMBER}`);
         }
       }
     });
@@ -1148,7 +1230,7 @@
   if (el.btnCopyCard) {
     el.btnCopyCard.addEventListener('click', () => {
       triggerHaptic('success');
-      copyToClipboard(CARD_NUMBER, `Номер карты ${CARD_NUMBER} скопирован в буфер!`);
+      copyToClipboard(CARD_NUMBER, `Номер карты скопирован: ${CARD_NUMBER}`);
     });
   }
 
@@ -1156,7 +1238,7 @@
   if (el.btnCopyPhone) {
     el.btnCopyPhone.addEventListener('click', () => {
       triggerHaptic('success');
-      copyToClipboard(SBP_PHONE, `Телефон СБП ${SBP_PHONE} (${SBP_RECIPIENT}) скопирован!`);
+      copyToClipboard(SBP_PHONE, `Номер СБП скопирован: ${SBP_PHONE}`);
     });
   }
 
