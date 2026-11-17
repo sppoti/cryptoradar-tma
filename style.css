@@ -1728,111 +1728,36 @@ input:focus-visible,
 .btn-stars {
   background: #FFFFFF;
   color: #000000;
-  box-shadow: 0 2px 14px rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 14px rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .btn-stars:hover {
-  background: #E5E5E5;
+  background: #F0F0F0;
   color: #000000;
   transform: translateY(-1px);
-  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25);
 }
 
 .btn-stars:active {
   transform: scale(0.98);
 }
 
-.btn-secondary-action {
-  width: 100%;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(229, 192, 123, 0.35);
-  background: #141414;
-  color: var(--vip-gold-light);
-  font-family: var(--font-main);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
+.auto-delivery-badge {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  transition: all 0.18s ease;
-}
-
-.btn-secondary-action:hover {
-  background: #1C1C1C;
-  border-color: rgba(229, 192, 123, 0.6);
-}
-
-.btn-secondary-action:active {
-  transform: scale(0.98);
-}
-
-/* SBP Details Drawer */
-.manual-payment-box {
-  background: #0A0A0A;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.manual-payment-box.hidden {
-  display: none;
-}
-
-.manual-header {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--text-heading);
-}
-
-.details-content {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--text-secondary);
-  line-height: 1.45;
-  white-space: pre-line;
-  background: #000000;
-  padding: 8px;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border-subtle);
-}
-
-.manual-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.btn-copy, .btn-support {
-  padding: 7px 10px;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border-subtle);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-main);
-  font-family: var(--font-main);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
   text-align: center;
-  transition: all 0.14s ease;
-}
-
-.btn-copy:hover, .btn-support:hover {
-  background: rgba(255, 255, 255, 0.09);
-}
-
-.btn-copy:active, .btn-support:active {
-  transform: scale(0.98);
-}
-
-.btn-support {
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #FFFFFF;
+  gap: 6px;
+  padding: 8px 12px;
+  margin-top: 6px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 215, 0, 0.06);
+  border: 1px solid rgba(255, 215, 0, 0.18);
+  color: var(--vip-gold-light);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 /* Toast Floating Pill */

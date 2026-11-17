@@ -326,14 +326,7 @@
     btnCloseModal: document.getElementById('btn-close-modal'),
     tariffsContainer: document.getElementById('tariffs-container'),
     btnPayStars: document.getElementById('btn-pay-stars'),
-    btnPayRub: document.getElementById('btn-pay-rub'),
     starsBtnText: document.getElementById('stars-btn-text'),
-    rubBtnText: document.getElementById('rub-btn-text'),
-    manualPaymentBox: document.getElementById('manual-payment-box'),
-    manualDetailsText: document.getElementById('manual-details-text'),
-    btnCopyCard: document.getElementById('btn-copy-card'),
-    btnCopyPhone: document.getElementById('btn-copy-phone'),
-    btnOpenBotSupport: document.getElementById('btn-open-bot-support'),
     toast: document.getElementById('toast')
   };
 
@@ -1035,7 +1028,6 @@
         </div>
         <div class="tariff-price-box">
           <div class="tariff-stars">${t.stars} ⭐</div>
-          <div class="tariff-rub">${t.rub_price} ₽</div>
         </div>
       `;
 
@@ -1064,15 +1056,14 @@
 
     const activeTariff = state.tariffs.find(t => t.key === state.selectedTariffKey) || state.tariffs[0];
     if (activeTariff) updatePayButtonsText(activeTariff);
-
-    if (el.manualDetailsText) {
-      el.manualDetailsText.textContent = state.paymentInfo.manual_details || SBP_DETAILS_TEXT;
-    }
   }
 
   function updatePayButtonsText(t) {
-    if (el.starsBtnText) el.starsBtnText.textContent = `Оплатить ${t.stars} ⭐ (Telegram Stars)`;
-    if (el.rubBtnText) el.rubBtnText.textContent = `Оплатить ${t.rub_price} ₽ (СБП / Карта)`;
+    if (el.starsBtnText) {
+      el.starsBtnText.textContent = `⭐ Оплатить ${t.stars} ⭐ через Telegram Stars`;
+    } else if (el.btnPayStars) {
+      el.btnPayStars.textContent = `⭐ Оплатить ${t.stars} ⭐ через Telegram Stars`;
+    }
   }
 
   function openVipModal() {
@@ -1188,15 +1179,15 @@
     el.modalBackdrop.addEventListener('click', closeVipModal);
   }
 
-  // 1. Оплата через Telegram Stars
+  // 1. Оплата через Telegram Stars (Мгновенная авто-выдача)
   if (el.btnPayStars) {
     el.btnPayStars.addEventListener('click', () => {
       triggerHaptic('heavy');
-      const currentTariff = state.tariffs.find(t => t.key === state.selectedTariffKey) || state.tariffs[0] || { key: 'sub_3m', stars: 350 };
-      const tariffKey = currentTariff.key;
-      const deepLink = `https://t.me/${BOT_USERNAME}?start=pay_${tariffKey}`;
+      const selectedKey = state.selectedTariffKey || 'sub_3m';
+      const currentTariff = state.tariffs.find(t => t.key === selectedKey) || state.tariffs[0] || { key: 'sub_3m', stars: 350 };
+      const deepLink = `https://t.me/${BOT_USERNAME}?start=pay_${selectedKey}`;
 
-      showToast(`Открытие счёта Stars (${currentTariff.stars} ⭐)...`);
+      showToast(`⚡ Открытие счёта Stars (${currentTariff.stars} ⭐)...`);
 
       setTimeout(() => {
         if (tg && typeof tg.openTelegramLink === 'function') {
@@ -1207,57 +1198,7 @@
         } else {
           window.open(deepLink, '_blank');
         }
-      }, 400);
-    });
-  }
-
-  // 2. Оплата по СБП / Карте
-  if (el.btnPayRub) {
-    el.btnPayRub.addEventListener('click', () => {
-      triggerHaptic('medium');
-      if (el.manualPaymentBox) {
-        const isHidden = el.manualPaymentBox.classList.contains('hidden');
-        el.manualPaymentBox.classList.toggle('hidden');
-        if (isHidden) {
-          el.manualPaymentBox.scrollIntoView({ behavior: 'smooth' });
-          copyToClipboard(CARD_NUMBER, `Номер карты скопирован: ${CARD_NUMBER}`);
-        }
-      }
-    });
-  }
-
-  // 3. Скопировать номер карты
-  if (el.btnCopyCard) {
-    el.btnCopyCard.addEventListener('click', () => {
-      triggerHaptic('success');
-      copyToClipboard(CARD_NUMBER, `Номер карты скопирован: ${CARD_NUMBER}`);
-    });
-  }
-
-  // 4. Скопировать телефон СБП
-  if (el.btnCopyPhone) {
-    el.btnCopyPhone.addEventListener('click', () => {
-      triggerHaptic('success');
-      copyToClipboard(SBP_PHONE, `Номер СБП скопирован: ${SBP_PHONE}`);
-    });
-  }
-
-  // 5. Отправить чек в бот
-  if (el.btnOpenBotSupport) {
-    el.btnOpenBotSupport.addEventListener('click', () => {
-      triggerHaptic('light');
-      const supportLink = `https://t.me/${BOT_USERNAME}?start=receipt`;
-      showToast('Переход в бот для отправки чека...');
-      setTimeout(() => {
-        if (tg && typeof tg.openTelegramLink === 'function') {
-          tg.openTelegramLink(supportLink);
-        } else if (tg && typeof tg.close === 'function') {
-          window.location.href = supportLink;
-          setTimeout(() => tg.close(), 300);
-        } else {
-          window.open(supportLink, '_blank');
-        }
-      }, 400);
+      }, 300);
     });
   }
 
