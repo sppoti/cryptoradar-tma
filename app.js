@@ -263,17 +263,151 @@
     `;
   }
 
+  // --- РЕЗОЛВЕР ДАННЫХ ПОЛЬЗОВАТЕЛЯ TELEGRAM ---
+  function resolveTelegramUser() {
+    let id = 0;
+    let firstName = '';
+    let username = '';
+
+    function tryParseUser(str) {
+      if (!str) return null;
+      try {
+        return JSON.parse(str);
+      } catch (e) {
+        try {
+          return JSON.parse(decodeURIComponent(str));
+        } catch (e2) {
+          return null;
+        }
+      }
+    }
+
+    // 1. window.Telegram?.WebApp?.initDataUnsafe?.user
+    const tgUser = tg?.initDataUnsafe?.user;
+    if (tgUser && tgUser.id) {
+      id = Number(tgUser.id);
+      firstName = tgUser.first_name || '';
+      username = tgUser.username || '';
+    }
+
+    // 2. window.Telegram?.WebApp?.initData
+    if (!id && tg?.initData) {
+      try {
+        const initParams = new URLSearchParams(tg.initData);
+        const userObj = tryParseUser(initParams.get('user'));
+        if (userObj && userObj.id) {
+          id = Number(userObj.id);
+          if (!firstName && userObj.first_name) firstName = userObj.first_name;
+          if (!username && userObj.username) username = userObj.username;
+        }
+      } catch (e) {
+        console.warn('initData parse notice:', e);
+      }
+    }
+
+    // 3. window.location.hash (#tgWebAppData=... или #user_id=...)
+    if (!id && window.location.hash) {
+      try {
+        const rawHash = window.location.hash.replace(/^#/, '');
+        const hashParams = new URLSearchParams(rawHash);
+        const tgData = hashParams.get('tgWebAppData');
+        if (tgData) {
+          const innerParams = new URLSearchParams(tgData);
+          const userObj = tryParseUser(innerParams.get('user'));
+          if (userObj && userObj.id) {
+            id = Number(userObj.id);
+            if (!firstName && userObj.first_name) firstName = userObj.first_name;
+            if (!username && userObj.username) username = userObj.username;
+          }
+        }
+        if (!id) {
+          const directUserObj = tryParseUser(hashParams.get('user'));
+          if (directUserObj && directUserObj.id) {
+            id = Number(directUserObj.id);
+            if (!firstName && directUserObj.first_name) firstName = directUserObj.first_name;
+            if (!username && directUserObj.username) username = directUserObj.username;
+          }
+        }
+        if (!id && hashParams.get('user_id')) {
+          id = Number(hashParams.get('user_id'));
+        }
+      } catch (e) {
+        console.warn('location.hash parse notice:', e);
+      }
+    }
+
+    // 4. window.location.search (?user_id=... или ?tgWebAppData=...)
+    if (!id) {
+      const qUserId = Number(urlParams.get('user_id'));
+      if (qUserId) id = qUserId;
+      if (!id && urlParams.get('tgWebAppData')) {
+        try {
+          const innerParams = new URLSearchParams(urlParams.get('tgWebAppData'));
+          const userObj = tryParseUser(innerParams.get('user'));
+          if (userObj && userObj.id) {
+            id = Number(userObj.id);
+            if (!firstName && userObj.first_name) firstName = userObj.first_name;
+            if (!username && userObj.username) username = userObj.username;
+          }
+        } catch (e) {}
+      }
+    }
+    if (!firstName && urlParams.get('first_name')) {
+      firstName = urlParams.get('first_name');
+    }
+
+    // 5. Fallback на localStorage
+    if (!id) {
+      try {
+        const savedId = Number(localStorage.getItem('cr_user_id'));
+        if (savedId) id = savedId;
+      } catch (e) {}
+    }
+    if (!firstName) {
+      try {
+        const savedName = localStorage.getItem('cr_user_name');
+        if (savedName) firstName = savedName;
+      } catch (e) {}
+    }
+
+    // Сохранение в localStorage для персистентности между перезапусками
+    if (id) {
+      try {
+        localStorage.setItem('cr_user_id', String(id));
+      } catch (e) {}
+    }
+    if (firstName) {
+      try {
+        localStorage.setItem('cr_user_name', firstName);
+      } catch (e) {}
+    }
+
+    if (!firstName) {
+      firstName = (id === ADMIN_ID) ? 'Администратор' : 'Трейдер';
+    }
+
+    return { id, firstName, username };
+  }
+
   // --- СОСТОЯНИЕ ПРИЛОЖЕНИЯ ---
   const urlParams = new URLSearchParams(window.location.search);
-  const initialUserId = Number(urlParams.get('user_id')) || Number(tg?.initDataUnsafe?.user?.id) || 0;
-  const initialFirstName = tg?.initDataUnsafe?.user?.first_name || (initialUserId === ADMIN_ID ? 'Администратор' : 'Трейдер');
-  const initialIsVip = (initialUserId === ADMIN_ID) || (urlParams.get('vip') === '1');
+  const tgUserData = resolveTelegramUser();
+  const initialUserId = tgUserData.id;
+  const initialFirstName = tgUserData.firstName;
+  const initialUsername = tgUserData.username;
+
+  let cachedIsVip = false;
+  try {
+    cachedIsVip = localStorage.getItem('cr_is_vip') === '1';
+  } catch (e) {}
+
+  const initialIsVip = (initialUserId === ADMIN_ID) || (urlParams.get('vip') === '1') || cachedIsVip;
 
   const state = {
     user: {
       id: initialUserId,
       firstName: initialFirstName,
-      username: tg?.initDataUnsafe?.user?.username || '',
+      username: initialUsername,
       isVip: initialIsVip,
       subUntil: null,
       refCount: 0
@@ -465,37 +599,51 @@
 
   // 1. Статус пользователя
   async function fetchUserStatus() {
-    if (!state.user.id && tg?.initDataUnsafe?.user?.id) {
-      state.user.id = Number(tg.initDataUnsafe.user.id);
+    const resolved = resolveTelegramUser();
+    if (resolved.id) {
+      state.user.id = resolved.id;
+      if (!state.user.username && resolved.username) state.user.username = resolved.username;
     }
-    if (tg?.initDataUnsafe?.user?.first_name && (!state.user.firstName || state.user.firstName === 'Трейдер')) {
-      state.user.firstName = tg.initDataUnsafe.user.first_name;
+    if (resolved.firstName && (!state.user.firstName || state.user.firstName === 'Трейдер')) {
+      state.user.firstName = resolved.firstName;
     }
 
     const hasVipParam = urlParams.get('vip') === '1';
-    if (hasVipParam || (state.user.id && state.user.id === ADMIN_ID)) {
+    const isAdmin = state.user.id === ADMIN_ID;
+
+    if (hasVipParam || isAdmin) {
       state.user.isVip = true;
+      try {
+        localStorage.setItem('cr_is_vip', '1');
+      } catch (e) {}
     }
 
     if (API_BASE && state.user.id) {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
         const url = `${API_BASE}/api/user-status?user_id=${state.user.id}`;
-        const res = await fetch(url);
+        const res = await fetch(url, {
+          cache: 'no-store',
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         if (res.ok) {
           const data = await res.json();
           if (data && data.user) {
-            if (data.user.is_vip === true || hasVipParam || state.user.id === ADMIN_ID) {
-              state.user.isVip = true;
-            } else {
-              state.user.isVip = false;
-            }
+            const isVip = Boolean(data.user.is_vip);
+            state.user.isVip = isVip || isAdmin || hasVipParam;
+            try {
+              localStorage.setItem('cr_is_vip', state.user.isVip ? '1' : '0');
+            } catch (e) {}
             state.user.subUntil = data.user.sub_until;
             state.user.refCount = data.user.referrals_count || 0;
             if (data.user.first_name) state.user.firstName = data.user.first_name;
           }
         }
       } catch (e) {
-        console.warn('API user-status недоступно, используется локальный профиль');
+        console.warn('API user-status недоступно, используется локальный профиль:', e);
       }
     }
     updateUserUI();
@@ -893,7 +1041,7 @@
   async function fetchSignals() {
     if (API_BASE) {
       try {
-        const res = await fetch(`${API_BASE}/api/signals`);
+        const res = await fetch(`${API_BASE}/api/signals`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data?.signals) state.signals = data.signals;
@@ -1014,7 +1162,7 @@
   async function fetchTariffs() {
     if (API_BASE) {
       try {
-        const res = await fetch(`${API_BASE}/api/tariffs`);
+        const res = await fetch(`${API_BASE}/api/tariffs`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data?.tariffs) state.tariffs = data.tariffs;
@@ -1227,8 +1375,11 @@
     renderTradingViewChart(state.activeSymbol);
     updateUserUI();
 
+    // 1. Сначала гарантированно получаем статус пользователя для надежного VIP-доступа
+    await fetchUserStatus();
+
+    // 2. Затем параллельно загружаем котировки, сигналы и тарифы
     await Promise.all([
-      fetchUserStatus(),
       fetchMarketOverview(),
       fetchSignals(),
       fetchTariffs()
