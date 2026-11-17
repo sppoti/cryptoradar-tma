@@ -295,7 +295,7 @@
     cachedRsi: {}
   };
 
-  const API_BASE = urlParams.get('api') || '';
+  const API_BASE = urlParams.get('api') || 'https://cryptoradar-bot-z1r3.onrender.com';
 
   // DOM Элементы
   const el = {
@@ -465,14 +465,30 @@
 
   // 1. Статус пользователя
   async function fetchUserStatus() {
-    if (API_BASE) {
+    if (!state.user.id && tg?.initDataUnsafe?.user?.id) {
+      state.user.id = Number(tg.initDataUnsafe.user.id);
+    }
+    if (tg?.initDataUnsafe?.user?.first_name && (!state.user.firstName || state.user.firstName === 'Трейдер')) {
+      state.user.firstName = tg.initDataUnsafe.user.first_name;
+    }
+
+    const hasVipParam = urlParams.get('vip') === '1';
+    if (hasVipParam || (state.user.id && state.user.id === ADMIN_ID)) {
+      state.user.isVip = true;
+    }
+
+    if (API_BASE && state.user.id) {
       try {
         const url = `${API_BASE}/api/user-status?user_id=${state.user.id}`;
         const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
-          if (data.user) {
-            state.user.isVip = data.user.is_vip || false;
+          if (data && data.user) {
+            if (data.user.is_vip === true || hasVipParam || state.user.id === ADMIN_ID) {
+              state.user.isVip = true;
+            } else {
+              state.user.isVip = false;
+            }
             state.user.subUntil = data.user.sub_until;
             state.user.refCount = data.user.referrals_count || 0;
             if (data.user.first_name) state.user.firstName = data.user.first_name;
@@ -483,6 +499,7 @@
       }
     }
     updateUserUI();
+    renderSignals();
   }
 
   function updateUserUI() {
@@ -497,6 +514,9 @@
       } else {
         el.vipBadge.className = 'sub-status-badge badge-free';
         el.vipBadge.textContent = 'FREE';
+        if (el.btnOpenVipHeader) {
+          el.btnOpenVipHeader.innerHTML = '<span class="btn-vip-icon">💎</span> <span class="btn-vip-text">VIP доступ</span>';
+        }
       }
     }
   }
