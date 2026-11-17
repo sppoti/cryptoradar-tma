@@ -180,8 +180,8 @@
     try {
       tg.ready();
       tg.expand();
-      if (tg.setHeaderColor) tg.setHeaderColor('#080B0E');
-      if (tg.setBackgroundColor) tg.setBackgroundColor('#080B0E');
+      if (tg.setHeaderColor) tg.setHeaderColor('#000000');
+      if (tg.setBackgroundColor) tg.setBackgroundColor('#000000');
     } catch (e) {
       console.warn('Telegram SDK initialization note:', e);
     }
@@ -245,7 +245,7 @@
     });
 
     const pathD = `M ${points.join(' L ')}`;
-    const strokeColor = positive ? '#00FFA3' : '#FF2A6D';
+    const strokeColor = positive ? '#FFFFFF' : '#EF4444';
     const gradId = `spark-grad-${Math.random().toString(36).substr(2, 8)}`;
     const areaD = `${pathD} L ${W},${H} L 0,${H} Z`;
 
@@ -253,7 +253,7 @@
       <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width: 100%; height: ${H}px; display: block; overflow: visible;">
         <defs>
           <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.25" />
+            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="${positive ? '0.12' : '0.2'}" />
             <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0" />
           </linearGradient>
         </defs>
@@ -424,7 +424,7 @@
           theme: 'dark',
           style: '1',
           locale: 'ru',
-          toolbar_bg: '#080B0E',
+          toolbar_bg: '#000000',
           enable_publishing: false,
           hide_top_toolbar: false,
           hide_legend: false,
@@ -440,10 +440,10 @@
             'header_screenshot'
           ],
           overrides: {
-            'paneProperties.background': '#080B0E',
-            'paneProperties.vertGridProperties.color': 'rgba(0, 255, 163, 0.05)',
-            'paneProperties.horzGridProperties.color': 'rgba(0, 255, 163, 0.05)',
-            'scalesProperties.textColor': '#8E9FAD'
+            'paneProperties.background': '#000000',
+            'paneProperties.vertGridProperties.color': 'rgba(255, 255, 255, 0.04)',
+            'paneProperties.horzGridProperties.color': 'rgba(255, 255, 255, 0.04)',
+            'scalesProperties.textColor': '#A3A3A3'
           }
         });
         return;
@@ -828,16 +828,16 @@
       `;
 
       let rsi1hClass = 'rsi-neutral';
-      let statusBadge = '<span class="status-badge-cell" style="background: rgba(148, 163, 184, 0.12); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.22);">Нейтрально</span>';
+      let statusBadge = '<span class="status-badge-cell" style="background: #141414; color: #A3A3A3; border: 1px solid rgba(255, 255, 255, 0.08);">Нейтрально</span>';
       
       if (t.rsi_1h <= 35) {
         rsi1hClass = 'rsi-oversold';
-        statusBadge = '<span class="status-badge-cell" style="background: rgba(0, 255, 163, 0.12); color: #00FFA3; border: 1px solid rgba(0, 255, 163, 0.3);">Перепродан</span>';
+        statusBadge = '<span class="status-badge-cell" style="background: #1A1A1A; color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.15);">Перепродан</span>';
       } else if (t.rsi_1h >= 65) {
         rsi1hClass = 'rsi-overbought';
-        statusBadge = '<span class="status-badge-cell" style="background: rgba(255, 42, 109, 0.12); color: #FF2A6D; border: 1px solid rgba(255, 42, 109, 0.3);">Перекуплен</span>';
+        statusBadge = '<span class="status-badge-cell" style="background: #1A1A1A; color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.25);">Перекуплен</span>';
       } else if (t.change_24h > 3.0) {
-        statusBadge = '<span class="status-badge-cell" style="background: rgba(0, 229, 255, 0.12); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3);">Импульс</span>';
+        statusBadge = '<span class="status-badge-cell" style="background: #1A1A1A; color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.15);">Импульс</span>';
       }
 
       tr.innerHTML = `

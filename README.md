@@ -24,7 +24,7 @@
 ```
 cryptoradar-tma/
 ├── index.html       # Главная разметка терминала и модальных окон оплаты
-├── style.css        # Неоновые glassmorphism стили, анимации пульсаций и адаптивная верстка
+├── style.css        # Премиальные Monochrome OLED Black glass-карточки, HUD-сетка и адаптивная верстка
 ├── app.js           # Реактивное ядро: котировки Binance, TradingView, расчет RSI, Stars/СБП
 └── README.md        # Документация проекта
 ```
